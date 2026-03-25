@@ -122,11 +122,22 @@ class HabitProvider extends ChangeNotifier {
     if (justCompleted) {
       _userProfile = _userProfile.addXp(xpReward);
       await _storage.saveProfile(_userProfile);
+    } else {
+      // Изымаем XP при снятии галочки (чтобы не фармили бесконечно)
+      _userProfile = _userProfile.removeXp(xpReward);
+      await _storage.saveProfile(_userProfile);
     }
 
     notifyListeners();
     await _storage.saveHabits(_habits);
   }
+
+  Future<void> addStepXp(int amount) async {
+    _userProfile = _userProfile.addXp(amount);
+    notifyListeners();
+    await _storage.saveProfile(_userProfile);
+  }
+
 
   // ===================== GOALS =====================
 

@@ -13,26 +13,35 @@ class StatsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Consumer<HabitProvider>(
-      builder: (context, provider, _) {
-        final habits = provider.habits;
-        final completed = provider.todayCompleted.length;
-        final total = provider.todayHabits.length;
-        final archived = provider.archivedHabits;
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: const Text('Статистика'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : AppTheme.textPrimaryLight),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Consumer<HabitProvider>(
+        builder: (context, provider, _) {
+          final habits = provider.habits;
+          final completed = provider.todayCompleted.length;
+          final total = provider.todayHabits.length;
+          final archived = provider.archivedHabits;
 
-        return CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Статистика',
-                        style: Theme.of(context).textTheme.headlineLarge),
-                    const SizedBox(height: 24),
+          return CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 16),
 
-                    // Summary cards
+                      // Summary cards
                     Row(
                       children: [
                         Expanded(
@@ -398,6 +407,7 @@ class StatsScreen extends StatelessWidget {
           ],
         );
       },
+    ),
     );
   }
 }

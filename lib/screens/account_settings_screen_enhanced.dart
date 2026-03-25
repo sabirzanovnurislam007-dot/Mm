@@ -107,7 +107,7 @@ class _AccountSettingsScreenEnhancedState
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.accentPurple,
+              backgroundColor: AppTheme.accentGreen,
             ),
             onPressed: () async {
               if (tempController.text.isNotEmpty &&
@@ -167,7 +167,7 @@ class _AccountSettingsScreenEnhancedState
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.accentPurple,
+              backgroundColor: AppTheme.accentGreen,
             ),
             onPressed: () async {
               if (tempController.text.contains('@')) {
@@ -266,7 +266,7 @@ class _AccountSettingsScreenEnhancedState
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.accentPurple,
+              backgroundColor: AppTheme.accentGreen,
             ),
             onPressed: () async {
               Navigator.pop(context);
@@ -344,13 +344,13 @@ class _AccountSettingsScreenEnhancedState
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                AppTheme.accentPurple.withValues(alpha: 0.2),
+                                AppTheme.accentGreen.withValues(alpha: 0.2),
                                 AppTheme.accentBlue.withValues(alpha: 0.1),
                               ],
                             ),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: AppTheme.accentPurple.withValues(
+                              color: AppTheme.accentGreen.withValues(
                                 alpha: 0.3,
                               ),
                             ),
@@ -362,7 +362,7 @@ class _AccountSettingsScreenEnhancedState
                                 height: 60,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: AppTheme.accentPurple,
+                                  color: AppTheme.accentGreen,
                                 ),
                                 child: Center(
                                   child: Text(
@@ -490,7 +490,7 @@ class _AccountSettingsScreenEnhancedState
                   'End your current session',
                   Icons.logout_outlined,
                   () => _showSignOutDialog(),
-                  AppTheme.accentPurple,
+                  AppTheme.accentGreen,
                   isDark,
                   delay: 450,
                 ),
@@ -528,12 +528,12 @@ class _AccountSettingsScreenEnhancedState
             color: isDark ? AppTheme.bgCardLight : Colors.white,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: AppTheme.accentPurple.withValues(alpha: 0.2),
+              color: AppTheme.accentGreen.withValues(alpha: 0.2),
             ),
           ),
           child: Row(
             children: [
-              Icon(icon, color: AppTheme.accentPurple, size: 24),
+              Icon(icon, color: AppTheme.accentGreen, size: 24),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -564,7 +564,7 @@ class _AccountSettingsScreenEnhancedState
                 icon: const Icon(
                   Icons.arrow_forward_ios,
                   size: 16,
-                  color: AppTheme.accentPurple,
+                  color: AppTheme.accentGreen,
                 ),
                 onPressed: onEdit,
               ),
@@ -623,7 +623,7 @@ class _AccountSettingsScreenEnhancedState
   }) {
     Color borderColor = isDestructive
         ? AppTheme.accentRed
-        : AppTheme.accentPurple;
+        : AppTheme.accentGreen;
     return Container(
           decoration: BoxDecoration(
             color: isDark ? AppTheme.bgCardLight : Colors.white,

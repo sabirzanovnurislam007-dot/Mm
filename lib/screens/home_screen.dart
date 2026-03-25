@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../models/habit.dart';
 import '../providers/habit_provider.dart';
+import '../providers/fitness_provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/locale_provider.dart';
 import '../l10n/app_strings.dart';
@@ -10,6 +12,7 @@ import '../theme/app_theme.dart';
 import 'package:image_picker/image_picker.dart';
 import '../widgets/progress_ring.dart';
 import 'calendar_screen.dart';
+import 'pomodoro_screen.dart';
 import 'settings_screen.dart';
 import 'stats_screen.dart';
 
@@ -190,46 +193,183 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: AppTheme.accentGreen.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: AppTheme.accentGreen.withValues(alpha: 0.4)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.star, color: AppTheme.accentGreen, size: 13),
-                              const SizedBox(width: 5),
-                              Text(
-                                'LVL ${provider.userProfile.currentLevel}  •  ${provider.userProfile.xp} XP',
-                                style: const TextStyle(
-                                  color: AppTheme.accentGreen,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 12,
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween<double>(begin: 0.0, end: provider.userProfile.xp.toDouble()),
+                      duration: const Duration(milliseconds: 1000),
+                      curve: Curves.easeOutCubic,
+                      builder: (context, animatedXp, child) {
+                        int tempXp = animatedXp.toInt();
+                        int currentLevel = 1;
+                        while (tempXp >= currentLevel * 100) {
+                          currentLevel++;
+                        }
+                        int previousLevelXp = (currentLevel - 1) * 100;
+                        double levelProgress = (animatedXp - previousLevelXp) / 100.0;
+                        levelProgress = levelProgress.clamp(0.0, 1.0);
+
+                        return Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: AppTheme.accentGreen.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: AppTheme.accentGreen.withValues(alpha: 0.4)),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.star, color: AppTheme.accentGreen, size: 13),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    'LVL $currentLevel  •  $tempXp XP',
+                                    style: const TextStyle(
+                                      color: AppTheme.accentGreen,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(4),
+                                child: LinearProgressIndicator(
+                                  value: levelProgress,
+                                  minHeight: 5,
+                                  backgroundColor: isDark
+                                      ? Colors.white.withValues(alpha: 0.08)
+                                      : Colors.black.withValues(alpha: 0.06),
+                                  valueColor: const AlwaysStoppedAnimation(AppTheme.accentGreen),
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: LinearProgressIndicator(
-                              value: provider.userProfile.levelProgress,
-                              minHeight: 5,
-                              backgroundColor: isDark
-                                  ? Colors.white.withValues(alpha: 0.08)
-                                  : Colors.black.withValues(alpha: 0.06),
-                              valueColor: const AlwaysStoppedAnimation(AppTheme.accentGreen),
                             ),
-                          ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+
+                // ===== STEPS COUNTER STRIP =====
+                Consumer<FitnessProvider>(
+                  builder: (context, fitness, child) {
+                    // Если API недоступно (например, на симуляторе или нет датчиков), скрываем
+                    if (fitness.status == 'Step Count API not available') {
+                      return const SliverToBoxAdapter(child: SizedBox.shrink());
+                    }
+                    return SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: AppTheme.accentBlue.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: AppTheme.accentBlue.withValues(alpha: 0.4)),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.directions_walk, color: AppTheme.accentBlue, size: 13),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    '${fitness.stepsToday} / ${fitness.targetSteps}',
+                                    style: const TextStyle(
+                                      color: AppTheme.accentBlue,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(4),
+                                child: LinearProgressIndicator(
+                                  value: fitness.stepProgress,
+                                  minHeight: 5,
+                                  backgroundColor: isDark
+                                      ? Colors.white.withValues(alpha: 0.08)
+                                      : Colors.black.withValues(alpha: 0.06),
+                                  valueColor: const AlwaysStoppedAnimation(AppTheme.accentBlue),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
+                    );
+                  },
+                ),
+
+                // ===== POMODORO CARD =====
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                    child: GestureDetector(
+                      onTap: () {
+                        HapticFeedback.mediumImpact();
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const PomodoroScreen()));
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              AppTheme.accentOrange.withValues(alpha: 0.15),
+                              AppTheme.accentOrange.withValues(alpha: 0.05),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppTheme.accentOrange.withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppTheme.accentOrange.withValues(alpha: 0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.timer, color: AppTheme.accentOrange, size: 24),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Режим Фокуса',
+                                    style: TextStyle(
+                                      color: AppTheme.accentOrange,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '25 минут концентрации / +50 XP',
+                                    style: TextStyle(
+                                      color: isDark ? Colors.white70 : Colors.black54,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.chevron_right, color: AppTheme.accentOrange),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),

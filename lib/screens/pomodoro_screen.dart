@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
+import '../providers/habit_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/progress_ring.dart';
 
@@ -40,6 +42,18 @@ class _PomodoroScreenState extends State<PomodoroScreen> {
         } else {
           _timer?.cancel();
           HapticFeedback.heavyImpact();
+          
+          if (_isWorkFocus) {
+             context.read<HabitProvider>().addStepXp(50);
+             ScaffoldMessenger.of(context).showSnackBar(
+               const SnackBar(
+                 content: Text('Сессия фокуса завершена! +50 XP 🎉', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                 backgroundColor: AppTheme.accentOrange,
+                 behavior: SnackBarBehavior.floating,
+               ),
+             );
+          }
+          
           _switchMode();
         }
       });

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'providers/habit_provider.dart';
+import 'providers/fitness_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/locale_provider.dart';
 import 'providers/auth_provider.dart';
@@ -48,6 +49,10 @@ class DisciplineApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => HabitProvider()..loadHabits()),
+        ChangeNotifierProxyProvider<HabitProvider, FitnessProvider>(
+          create: (context) => FitnessProvider(habitProvider: context.read<HabitProvider>()),
+          update: (context, habitProvider, previous) => previous ?? FitnessProvider(habitProvider: habitProvider),
+        ),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
       ],

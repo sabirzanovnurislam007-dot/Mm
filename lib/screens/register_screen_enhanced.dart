@@ -261,7 +261,7 @@ class _RegisterScreenEnhancedState extends State<RegisterScreenEnhanced> {
                                       authProvider.isPasswordVisible
                                           ? Icons.visibility_outlined
                                           : Icons.visibility_off_outlined,
-                                      color: AppTheme.accentPurple,
+                                      color: AppTheme.accentGreen,
                                     ),
                                     onPressed:
                                         authProvider.togglePasswordVisibility,
@@ -321,7 +321,7 @@ class _RegisterScreenEnhancedState extends State<RegisterScreenEnhanced> {
                                 _agreedToTerms = value ?? false;
                               });
                             },
-                            activeColor: AppTheme.accentPurple,
+                            activeColor: AppTheme.accentGreen,
                           ),
                           Expanded(
                             child: Text.rich(
@@ -332,7 +332,7 @@ class _RegisterScreenEnhancedState extends State<RegisterScreenEnhanced> {
                                     text: 'Terms & Conditions',
                                     style: Theme.of(context).textTheme.bodySmall
                                         ?.copyWith(
-                                          color: AppTheme.accentPurple,
+                                          color: AppTheme.accentGreen,
                                           decoration: TextDecoration.underline,
                                         ),
                                   ),
@@ -355,7 +355,7 @@ class _RegisterScreenEnhancedState extends State<RegisterScreenEnhanced> {
                                       ? null
                                       : _handleRegister,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppTheme.accentPurple,
+                                    backgroundColor: AppTheme.accentGreen,
                                     disabledBackgroundColor: Colors.grey[400],
                                     elevation: 8,
                                     shape: RoundedRectangleBorder(
@@ -415,7 +415,7 @@ class _RegisterScreenEnhancedState extends State<RegisterScreenEnhanced> {
                             'Sign In',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: AppTheme.accentPurple,
+                              color: AppTheme.accentGreen,
                             ),
                           ),
                         ),
@@ -443,26 +443,26 @@ class _RegisterScreenEnhancedState extends State<RegisterScreenEnhanced> {
       hintStyle: TextStyle(
         color: isDark ? AppTheme.textMuted : AppTheme.textSecondaryLight,
       ),
-      prefixIcon: Icon(prefixIcon, color: AppTheme.accentPurple),
+      prefixIcon: Icon(prefixIcon, color: AppTheme.accentGreen),
       suffixIcon: suffixIcon,
       filled: true,
       fillColor: isDark ? AppTheme.bgCardLight : Colors.white,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppTheme.accentPurple, width: 0.5),
+        borderSide: const BorderSide(color: AppTheme.accentGreen, width: 0.5),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide(
           color: isDark
-              ? AppTheme.accentPurple.withValues(alpha: 0.3)
-              : AppTheme.accentPurple.withValues(alpha: 0.2),
+              ? AppTheme.accentGreen.withValues(alpha: 0.3)
+              : AppTheme.accentGreen.withValues(alpha: 0.2),
           width: 0.5,
         ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppTheme.accentPurple, width: 2),
+        borderSide: const BorderSide(color: AppTheme.accentGreen, width: 2),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     );

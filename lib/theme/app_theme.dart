@@ -13,10 +13,9 @@ class AppTheme {
   static const Color bgCardLightAlt = Color(0xFFF0F0F8);
 
   // === Accent colors ===
-  static const Color accentPurple = Color(0xFF7C3AED);
+  static const Color accentGreen = Color(0xFF10B981);
   static const Color accentBlue = Color(0xFF3B82F6);
   static const Color accentCyan = Color(0xFF06B6D4);
-  static const Color accentGreen = Color(0xFF10B981);
   static const Color accentPink = Color(0xFFEC4899);
   static const Color accentOrange = Color(0xFFF59E0B);
   static const Color accentRed = Color(0xFFEF4444);
@@ -34,7 +33,7 @@ class AppTheme {
   static const Color danger = Color(0xFFEF4444);
 
   static const List<Color> habitColors = [
-    accentPurple,
+    accentGreen,
     accentBlue,
     accentCyan,
     accentGreen,
@@ -45,7 +44,7 @@ class AppTheme {
   ];
 
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [accentPurple, accentBlue],
+    colors: [accentGreen, accentBlue],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -61,9 +60,9 @@ class AppTheme {
     return ThemeData(
       brightness: Brightness.dark,
       scaffoldBackgroundColor: bgDark,
-      primaryColor: accentPurple,
+      primaryColor: accentGreen,
       colorScheme: const ColorScheme.dark(
-        primary: accentPurple,
+        primary: accentGreen,
         secondary: accentBlue,
         surface: bgCard,
         onPrimary: textPrimary,
@@ -83,21 +82,21 @@ class AppTheme {
         ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: accentPurple,
+        backgroundColor: accentGreen,
         foregroundColor: textPrimary,
         elevation: 8,
         shape: CircleBorder(),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: bgCard,
-        selectedItemColor: accentPurple,
+        selectedItemColor: accentGreen,
         unselectedItemColor: textMuted,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) return accentPurple;
+          if (states.contains(WidgetState.selected)) return accentGreen;
           return textMuted;
         }),
       ),
@@ -109,9 +108,9 @@ class AppTheme {
     return ThemeData(
       brightness: Brightness.light,
       scaffoldBackgroundColor: bgLight,
-      primaryColor: accentPurple,
+      primaryColor: accentGreen,
       colorScheme: const ColorScheme.light(
-        primary: accentPurple,
+        primary: accentGreen,
         secondary: accentBlue,
         surface: bgCardLightTheme,
         onPrimary: Colors.white,
@@ -131,21 +130,21 @@ class AppTheme {
         ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: accentPurple,
+        backgroundColor: accentGreen,
         foregroundColor: Colors.white,
         elevation: 8,
         shape: CircleBorder(),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: bgCardLightTheme,
-        selectedItemColor: accentPurple,
+        selectedItemColor: accentGreen,
         unselectedItemColor: textMutedLight,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) return accentPurple;
+          if (states.contains(WidgetState.selected)) return accentGreen;
           return textMutedLight;
         }),
       ),

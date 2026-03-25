@@ -82,7 +82,7 @@ class _RingPainter extends CustomPainter {
         endAngle: startAngle + sweepAngle,
         colors: color != null
             ? [color!, color!.withValues(alpha: 0.7)]
-            : [AppTheme.accentPurple, AppTheme.accentCyan],
+            : [AppTheme.accentGreen, AppTheme.accentCyan],
       );
 
       final progressPaint = Paint()

@@ -95,13 +95,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 8),
                 CircleAvatar(
                   radius: 36,
-                  backgroundColor: AppTheme.accentPurple.withValues(
+                  backgroundColor: AppTheme.accentGreen.withValues(
                     alpha: 0.15,
                   ),
                   child: const Icon(
                     Icons.person,
                     size: 40,
-                    color: AppTheme.accentPurple,
+                    color: AppTheme.accentGreen,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -117,7 +117,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   decoration: InputDecoration(
                     labelText: AppStrings.get('profile_name', lang),
                     hintText: AppStrings.get('profile_name_hint', lang),
-                    labelStyle: TextStyle(color: AppTheme.accentPurple),
+                    labelStyle: TextStyle(color: AppTheme.accentGreen),
                     filled: true,
                     fillColor: isDark
                         ? AppTheme.bgCardLight
@@ -129,13 +129,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: const BorderSide(
-                        color: AppTheme.accentPurple,
+                        color: AppTheme.accentGreen,
                         width: 1.5,
                       ),
                     ),
                     prefixIcon: const Icon(
                       Icons.person_outline,
-                      color: AppTheme.accentPurple,
+                      color: AppTheme.accentGreen,
                     ),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -151,7 +151,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     icon: const Icon(Icons.check, size: 18),
                     label: Text(AppStrings.get('save', lang)),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.accentPurple,
+                      backgroundColor: AppTheme.accentGreen,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -212,7 +212,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               isDark: isDark,
               trailing: Switch.adaptive(
                 value: themeProvider.isDarkMode,
-                activeThumbColor: AppTheme.accentPurple,
+                activeThumbColor: AppTheme.accentGreen,
                 onChanged: (_) => themeProvider.toggleTheme(),
               ),
             ),
@@ -504,7 +504,7 @@ class _LanguageTile extends StatelessWidget {
                   fontSize: 15,
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                   color: isSelected
-                      ? AppTheme.accentPurple
+                      ? AppTheme.accentGreen
                       : (isDark
                             ? AppTheme.textPrimary
                             : AppTheme.textPrimaryLight),
@@ -516,7 +516,7 @@ class _LanguageTile extends StatelessWidget {
               duration: const Duration(milliseconds: 200),
               child: const Icon(
                 Icons.check_circle,
-                color: AppTheme.accentPurple,
+                color: AppTheme.accentGreen,
                 size: 22,
               ),
             ),
@@ -595,7 +595,7 @@ class _ThemeOption extends StatelessWidget {
                 ),
                 border: Border.all(
                   color: isSelected
-                      ? AppTheme.accentPurple
+                      ? AppTheme.accentGreen
                       : Colors.transparent,
                   width: 2,
                 ),
@@ -619,7 +619,7 @@ class _ThemeOption extends StatelessWidget {
                       color: isLocked
                           ? AppTheme.textMuted
                           : (isSelected
-                                ? AppTheme.accentPurple
+                                ? AppTheme.accentGreen
                                 : (isDark
                                       ? AppTheme.textPrimary
                                       : AppTheme.textPrimaryLight)),
@@ -641,7 +641,7 @@ class _ThemeOption extends StatelessWidget {
             if (isSelected)
               const Icon(
                 Icons.check_circle,
-                color: AppTheme.accentPurple,
+                color: AppTheme.accentGreen,
                 size: 22,
               ),
           ],
