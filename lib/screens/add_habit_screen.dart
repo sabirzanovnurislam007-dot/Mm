@@ -413,7 +413,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                           title: Text(lang == 'en' ? 'Min/Max Goal' : 'Минимум/Максимум', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                           subtitle: Text(lang == 'en' ? 'Set minimum effort to start easily' : 'Снижает барьер для старта', style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
                           value: _enableMinMax,
-                          activeColor: AppTheme.accentGreen,
+                          activeThumbColor: AppTheme.accentGreen,
                           onChanged: (v) => setState(() => _enableMinMax = v),
                         ),
                         if (_enableMinMax) ...[
@@ -457,7 +457,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                           title: Text(lang == 'en' ? 'No Excuses Mode' : 'Режим без отмазок', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.accentRed)),
                           subtitle: Text(lang == 'en' ? 'Missed deadline = XP penalty' : 'Пропуск = штраф XP', style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
                           value: _isHardMode,
-                          activeColor: AppTheme.accentRed,
+                          activeThumbColor: AppTheme.accentRed,
                           onChanged: (v) => setState(() => _isHardMode = v),
                         ),
                         
@@ -467,7 +467,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
                           title: Text(lang == 'en' ? 'Honest Mode' : 'Честный режим', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.accentBlue)),
                           subtitle: Text(lang == 'en' ? 'Requires a photo to complete' : 'Требует фото-пруф', style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
                           value: _requiresPhoto,
-                          activeColor: AppTheme.accentBlue,
+                          activeThumbColor: AppTheme.accentBlue,
                           onChanged: (v) => setState(() => _requiresPhoto = v),
                         ),
                       ],

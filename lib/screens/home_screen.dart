@@ -652,7 +652,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       if (photo == null) return; // User cancelled, don't complete
     }
 
-    if (!mounted) return;
+    if (!context.mounted) return;
 
     // Min/Max Goals
     if (habit.minDurationMinutes != null && habit.targetDurationMinutes != null) {
@@ -686,7 +686,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       );
       if (xpReward == null) return; // Cancelled
       
-      if (!mounted) return;
+      if (!context.mounted) return;
       context.read<HabitProvider>().toggleToday(habit.id, xpReward: xpReward);
       return;
     }

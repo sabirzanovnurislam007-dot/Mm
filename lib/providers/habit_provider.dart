@@ -4,6 +4,7 @@ import '../models/user_profile.dart';
 import '../models/habit_goal.dart';
 import '../services/notification_service.dart';
 import '../services/storage_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HabitProvider extends ChangeNotifier {
   final StorageService _storage = StorageService();
@@ -51,6 +52,7 @@ class HabitProvider extends ChangeNotifier {
     _habits = await _storage.loadHabits();
     _goals = await _storage.loadGoals();
     _userProfile = await _storage.loadProfile();
+    await _checkHardModePenalties();
     _isLoading = false;
     _scheduleAllNotifications();
     notifyListeners();
@@ -192,4 +194,46 @@ class HabitProvider extends ChangeNotifier {
       }
     }
   }
+
+  Future<void> _checkHardModePenalties() async {
+    final prefs = await SharedPreferences.getInstance();
+    final lastCheckStr = prefs.getString('last_penalty_check');
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    
+    if (lastCheckStr != null) {
+      final lastCheck = DateTime.parse(lastCheckStr);
+      if (lastCheck.isBefore(today)) {
+        int totalPenalty = 0;
+        
+        for (final habit in _habits) {
+          if (!habit.isHardMode) continue;
+          
+          DateTime d = lastCheck;
+          while (d.isBefore(today)) {
+            final isScheduled = habit.repeatDays.contains(d.weekday);
+            final isCompleted = habit.completedDates.any((c) => 
+                c.year == d.year && c.month == d.month && c.day == d.day);
+                
+            if (isScheduled && !isCompleted) {
+              totalPenalty += 20; // 20 XP penalty per missed habit
+            }
+            d = d.add(const Duration(days: 1));
+          }
+        }
+        
+        if (totalPenalty > 0) {
+          _userProfile = _userProfile.removeXp(totalPenalty);
+          await _storage.saveProfile(_userProfile);
+        }
+      }
+    } else {
+      // First time setting the check
+      await prefs.setString('last_penalty_check', today.toIso8601String());
+      return;
+    }
+    
+    await prefs.setString('last_penalty_check', today.toIso8601String());
+  }
 }
+
