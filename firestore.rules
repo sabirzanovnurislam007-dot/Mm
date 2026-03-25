@@ -1,0 +1,73 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ========================================
+    // DEFAULT: DENY ALL ACCESS
+    // ========================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ========================================
+    // USERS COLLECTION
+    // ========================================
+    // Structure:
+    // users/{uid}/
+    //   ├── uid: string
+    //   ├── email: string
+    //   ├── username: string
+    //   ├── displayUsername: string
+    //   ├── createdAt: timestamp
+    //   └── updatedAt: timestamp
+    
+    match /users/{userId} {
+      // User can read their own profile
+      allow read: if request.auth.uid == userId;
+      
+      // User can update their own profile
+      allow update: if request.auth.uid == userId &&
+                       // Can't modify uid
+                       request.resource.data.uid == resource.data.uid &&
+                       // Email must match authenticated email
+                       request.resource.data.email == request.auth.token.email &&
+                       // updatedAt must be server timestamp
+                       request.resource.data.updatedAt == request.time;
+      
+      // Create new user profile on signup (via Cloud Function or client)
+      allow create: if request.auth.uid == userId &&
+                       request.auth.token.email_verified == false &&
+                       request.resource.data.uid == userId &&
+                       request.resource.data.email == request.auth.token.email &&
+                       request.resource.data.createdAt == request.time &&
+                       request.resource.data.updatedAt == request.time &&
+                       request.resource.data.username != null &&
+                       request.resource.data.displayUsername != null;
+      
+      // User can delete their own profile
+      allow delete: if request.auth.uid == userId;
+    }
+
+    // ========================================
+    // HABITS COLLECTION (existing)
+    // ========================================
+    match /habits/{habitId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // ========================================
+    // HELPER FUNCTIONS
+    // ========================================
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isEmailVerified() {
+      return request.auth.token.email_verified;
+    }
+  }
+}
