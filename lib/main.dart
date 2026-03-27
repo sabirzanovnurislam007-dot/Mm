@@ -20,15 +20,8 @@ import 'theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  WidgetsFlutterBinding.ensureInitialized();
-  await initializeDateFormatting('ru', null);
-
-  // Init notifications
-  await NotificationService().init();
-
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -36,65 +29,107 @@ void main() async {
       statusBarIconBrightness: Brightness.light,
     ),
   );
-
   runApp(const DisciplineApp());
 }
 
-class DisciplineApp extends StatelessWidget {
+class DisciplineApp extends StatefulWidget {
   const DisciplineApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => HabitProvider()..loadHabits()),
-        ChangeNotifierProxyProvider<HabitProvider, FitnessProvider>(
-          create: (context) => FitnessProvider(habitProvider: context.read<HabitProvider>()),
-          update: (context, habitProvider, previous) => previous ?? FitnessProvider(habitProvider: habitProvider),
-        ),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => LocaleProvider()),
-      ],
-      child: Consumer2<ThemeProvider, LocaleProvider>(
-        builder: (context, themeProvider, localeProvider, _) {
-          SystemChrome.setSystemUIOverlayStyle(
-            SystemUiOverlayStyle(
-              statusBarColor: Colors.transparent,
-              statusBarBrightness: themeProvider.isDarkMode
-                  ? Brightness.dark
-                  : Brightness.light,
-              statusBarIconBrightness: themeProvider.isDarkMode
-                  ? Brightness.light
-                  : Brightness.dark,
-            ),
-          );
+  State<DisciplineApp> createState() => _DisciplineAppState();
+}
 
-          return MaterialApp(
-            title: 'Дисциплина',
+class _DisciplineAppState extends State<DisciplineApp> {
+  late Future<void> _initFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _initFuture = _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await initializeDateFormatting('ru', null);
+    await NotificationService().init();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<void>(
+      future: _initFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const MaterialApp(
             debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: themeProvider.themeMode,
-            locale: localeProvider.locale,
-            supportedLocales: LocaleProvider.supportedLocales,
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            home: Consumer<AuthProvider>(
-              builder: (context, authProvider, _) {
-                if (authProvider.isAuthenticated) {
-                  return const MainShell();
-                } else {
-                  return const LoginScreen();
-                }
-              },
+            home: Scaffold(
+              backgroundColor: Color(0xFF1E1E1E), // AppTheme.bgDark
+              body: Center(
+                child: SizedBox(
+                  width: 48,
+                  height: 48,
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF10B981), // AppTheme.accentGreen
+                    strokeWidth: 3,
+                  ),
+                ),
+              ),
             ),
           );
-        },
-      ),
+        }
+
+        return MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => AuthProvider()),
+            ChangeNotifierProvider(create: (_) => HabitProvider()..loadHabits()),
+            ChangeNotifierProxyProvider<HabitProvider, FitnessProvider>(
+              create: (context) => FitnessProvider(habitProvider: context.read<HabitProvider>()),
+              update: (context, habitProvider, previous) => previous ?? FitnessProvider(habitProvider: habitProvider),
+            ),
+            ChangeNotifierProvider(create: (_) => ThemeProvider()),
+            ChangeNotifierProvider(create: (_) => LocaleProvider()),
+          ],
+          child: Consumer2<ThemeProvider, LocaleProvider>(
+            builder: (context, themeProvider, localeProvider, _) {
+              SystemChrome.setSystemUIOverlayStyle(
+                SystemUiOverlayStyle(
+                  statusBarColor: Colors.transparent,
+                  statusBarBrightness: themeProvider.isDarkMode
+                      ? Brightness.dark
+                      : Brightness.light,
+                  statusBarIconBrightness: themeProvider.isDarkMode
+                      ? Brightness.light
+                      : Brightness.dark,
+                ),
+              );
+
+              return MaterialApp(
+                title: 'Дисциплина',
+                debugShowCheckedModeBanner: false,
+                theme: AppTheme.lightTheme,
+                darkTheme: AppTheme.darkTheme,
+                themeMode: themeProvider.themeMode,
+                locale: localeProvider.locale,
+                supportedLocales: LocaleProvider.supportedLocales,
+                localizationsDelegates: const [
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                home: Consumer<AuthProvider>(
+                  builder: (context, authProvider, _) {
+                    if (authProvider.isAuthenticated) {
+                      return const MainShell();
+                    } else {
+                      return const LoginScreen();
+                    }
+                  },
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
@@ -108,10 +143,8 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> with TickerProviderStateMixin {
   int _currentIndex = 0;
-  // Track previous index for animation direction
   int _prevIndex = 0;
 
-  // Screens: Home, AI Coach, Calendar, Diary
   final List<Widget> _screens = const [
     HomeScreen(),
     AiCoachScreen(),
@@ -119,7 +152,6 @@ class _MainShellState extends State<MainShell> with TickerProviderStateMixin {
     DiaryScreen(),
   ];
 
-  // Nav items: icon, activeIcon, label
   static const _navItems = [
     (Icons.person_outline, Icons.person, 'Главная'),
     (Icons.psychology_outlined, Icons.psychology, 'AI'),
@@ -197,7 +229,7 @@ class _MainShellState extends State<MainShell> with TickerProviderStateMixin {
       ),
       child: Scaffold(
         extendBody: true,
-        backgroundColor: Colors.transparent, // Let Container show through
+        backgroundColor: Colors.transparent,
         body: SafeArea(
           bottom: false,
           child: AnimatedSwitcher(
@@ -222,147 +254,245 @@ class _MainShellState extends State<MainShell> with TickerProviderStateMixin {
             ),
           ),
         ),
-        bottomNavigationBar: _BottomNavBar(
+        floatingActionButton: AnimatedScale(
+          scale: _currentIndex == 0 ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutBack,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 24.0), // Поднимаем чуть выше слайдера
+            child: _PlusButton(onTap: _showAddHabit),
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        bottomNavigationBar: LiquidBottomNavSlider(
           currentIndex: _currentIndex,
           isDark: isDark,
           navItems: _navItems,
           onTap: _onNavTap,
-          onPlus: _showAddHabit,
         ),
       ),
     );
   }
 }
 
-// ── Custom Bottom Nav Bar ──────────────────────────────────────────────────────
-class _BottomNavBar extends StatelessWidget {
+// ── Custom Bottom Nav Bar Slider ──────────────────────────────────────────────
+class LiquidBottomNavSlider extends StatefulWidget {
   final int currentIndex;
   final bool isDark;
   final List<(IconData, IconData, String)> navItems;
   final void Function(int) onTap;
-  final VoidCallback onPlus;
 
-  const _BottomNavBar({
+  const LiquidBottomNavSlider({
+    super.key,
     required this.currentIndex,
     required this.isDark,
     required this.navItems,
     required this.onTap,
-    required this.onPlus,
   });
+
+  @override
+  State<LiquidBottomNavSlider> createState() => _LiquidBottomNavSliderState();
+}
+
+class _LiquidBottomNavSliderState extends State<LiquidBottomNavSlider> with SingleTickerProviderStateMixin {
+  late double _dragPosition;
+  bool _isDragging = false;
+  late AnimationController _snapController;
+  late Animation<double> _snapAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _dragPosition = 0.0;
+    _snapController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 350),
+    );
+    _snapController.addListener(() {
+      setState(() {
+        _dragPosition = _snapAnimation.value;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _snapController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final bottomPad = MediaQuery.of(context).padding.bottom;
-    // Floating glass pill
+    const double height = 64.0;
+
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + bottomPad),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(36),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
-          child: Container(
-            height: 72,
-            decoration: BoxDecoration(
-              color: isDark
-                  ? AppTheme.bgDark.withValues(alpha: 0.15)
-                  : Colors.white.withValues(alpha: 0.40),
-              borderRadius: BorderRadius.circular(36),
-              border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.12)
-                    : Colors.black.withValues(alpha: 0.07),
-                width: 0.8,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: isDark
-                      ? Colors.black.withValues(alpha: 0.25)
-                      : Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 32,
-                  offset: const Offset(0, 4),
+      padding: EdgeInsets.fromLTRB(24, 0, 24, 16 + bottomPad),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final double width = constraints.maxWidth;
+          const double thumbWidth = height; 
+          final double maxDragPosition = width - thumbWidth;
+          final double stepSize = widget.navItems.length > 1 
+              ? maxDragPosition / (widget.navItems.length - 1)
+              : maxDragPosition;
+
+          if (!_isDragging && !_snapController.isAnimating) {
+            _dragPosition = widget.currentIndex * stepSize;
+          }
+
+          final double stretchedThumbWidth = _isDragging ? thumbWidth * 1.3 : thumbWidth;
+          
+          double currentPos = _dragPosition;
+          if (_isDragging && currentPos > width - stretchedThumbWidth) {
+            currentPos = width - stretchedThumbWidth;
+          }
+
+          return GestureDetector(
+            onHorizontalDragStart: (details) {
+              if (_snapController.isAnimating) _snapController.stop();
+              setState(() => _isDragging = true);
+            },
+            onHorizontalDragUpdate: (details) {
+              setState(() {
+                _dragPosition += details.delta.dx;
+                _dragPosition = _dragPosition.clamp(0.0, maxDragPosition);
+              });
+            },
+            onHorizontalDragEnd: (details) {
+              setState(() => _isDragging = false);
+              
+              final int nearestStep = (_dragPosition / stepSize).round().clamp(0, widget.navItems.length - 1);
+              final double targetPosition = (nearestStep * stepSize).clamp(0.0, maxDragPosition);
+
+              _snapAnimation = Tween<double>(
+                begin: _dragPosition,
+                end: targetPosition,
+              ).animate(CurvedAnimation(
+                parent: _snapController,
+                curve: Curves.easeOutBack,
+              ));
+
+              _snapController.forward(from: 0.0);
+              
+              if (nearestStep != widget.currentIndex) {
+                widget.onTap(nearestStep);
+              }
+            },
+            onTapDown: (details) {
+              final dx = details.localPosition.dx;
+              final int nearestStep = (dx / (width / widget.navItems.length)).floor().clamp(0, widget.navItems.length - 1);
+              widget.onTap(nearestStep);
+            },
+            child: SizedBox(
+              height: height,
+              width: width,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(height / 2),
+                child: Stack(
+                  children: [
+                    BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: widget.isDark
+                              ? AppTheme.bgDark.withValues(alpha: 0.15)
+                              : Colors.white.withValues(alpha: 0.40),
+                          borderRadius: BorderRadius.circular(height / 2),
+                          border: Border.all(
+                            color: widget.isDark
+                                ? Colors.white.withValues(alpha: 0.12)
+                                : Colors.black.withValues(alpha: 0.07),
+                            width: 0.8,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: widget.isDark
+                                  ? Colors.black.withValues(alpha: 0.25)
+                                  : Colors.black.withValues(alpha: 0.08),
+                              blurRadius: 32,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(widget.navItems.length, (index) {
+                        return SizedBox(
+                          width: thumbWidth,
+                          height: height,
+                          child: Icon(
+                            widget.navItems[index].$1,
+                            color: widget.isDark ? AppTheme.textMuted : AppTheme.textMutedLight,
+                            size: 24,
+                          ),
+                        );
+                      }),
+                    ),
+
+                    Positioned(
+                      left: 0,
+                      top: 0,
+                      bottom: 0,
+                      width: currentPos + stretchedThumbWidth / 2,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: widget.isDark 
+                              ? AppTheme.accentGreen.withValues(alpha: 0.1) 
+                              : AppTheme.accentGreen.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(height / 2),
+                        ),
+                      ),
+                    ),
+
+                    Positioned(
+                      left: currentPos,
+                      top: 0,
+                      bottom: 0,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOutCubic,
+                        width: stretchedThumbWidth,
+                        height: height,
+                        decoration: BoxDecoration(
+                          color: AppTheme.accentGreen,
+                          borderRadius: BorderRadius.circular(height / 2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.accentGreen.withValues(alpha: 0.4),
+                              blurRadius: 15,
+                              spreadRadius: 2,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Builder(
+                            builder: (context) {
+                              final int nearestStep = (_dragPosition / stepSize).round().clamp(0, widget.navItems.length - 1);
+                              return AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 150),
+                                child: Icon(
+                                  widget.navItems[nearestStep].$2,
+                                  key: ValueKey(nearestStep),
+                                  color: Colors.white,
+                                  size: 26,
+                                ),
+                              );
+                            }
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ...List.generate(
-                  2,
-                  (i) => _NavItem(
-                    icon: navItems[i].$1,
-                    activeIcon: navItems[i].$2,
-                    isActive: currentIndex == i,
-                    isDark: isDark,
-                    onTap: () => onTap(i),
-                  ),
-                ),
-                _PlusButton(onTap: onPlus),
-                ...List.generate(2, (i) {
-                  final index = i + 2;
-                  return _NavItem(
-                    icon: navItems[index].$1,
-                    activeIcon: navItems[index].$2,
-                    isActive: currentIndex == index,
-                    isDark: isDark,
-                    onTap: () => onTap(index),
-                  );
-                }),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  final IconData icon;
-  final IconData activeIcon;
-  final bool isActive;
-  final bool isDark;
-  final VoidCallback onTap;
-
-  const _NavItem({
-    required this.icon,
-    required this.activeIcon,
-    required this.isActive,
-    required this.isDark,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOutBack,
-        width: 52,
-        height: 52,
-        decoration: BoxDecoration(
-          color: isActive
-              ? AppTheme.accentGreen.withValues(alpha: 0.15)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: Icon(
-                isActive ? activeIcon : icon,
-                key: ValueKey(isActive),
-                size: 24,
-                color: isActive
-                    ? AppTheme.accentGreen
-                    : (isDark ? AppTheme.textMuted : AppTheme.textMutedLight),
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -412,8 +542,8 @@ class _PlusButtonState extends State<_PlusButton>
       child: GestureDetector(
         onTap: _onTap,
         child: Container(
-          width: 52,
-          height: 52,
+          width: 56,
+          height: 56,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: const LinearGradient(
@@ -429,7 +559,7 @@ class _PlusButtonState extends State<_PlusButton>
               ),
             ],
           ),
-          child: const Icon(Icons.add, color: Colors.white, size: 26),
+          child: const Icon(Icons.add, color: Colors.white, size: 28),
         ),
       ),
     );

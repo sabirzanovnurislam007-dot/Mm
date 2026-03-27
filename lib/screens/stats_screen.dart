@@ -122,9 +122,7 @@ class StatsScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                        child: Container(
+                      child: Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             color: isDark
@@ -222,7 +220,6 @@ class StatsScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                    ),
                   ).animate().fadeIn(delay: (100 * index).ms).slideX(begin: 0.05);
                 },
                 childCount: habits.length,
@@ -431,9 +428,7 @@ class _StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
+      child: Container(
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
             color: isDark
@@ -470,7 +465,6 @@ class _StatCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }

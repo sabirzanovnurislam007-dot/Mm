@@ -788,7 +788,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     // Honest Mode: Check Photo
     if (habit.requiresPhoto) {
       final ImagePicker picker = ImagePicker();
-      final XFile? photo = await picker.pickImage(source: ImageSource.camera);
+      final XFile? photo = await picker.pickImage(source: ImageSource.camera, imageQuality: 50, maxWidth: 800);
       if (photo == null) return; // User cancelled, don't complete
     }
 

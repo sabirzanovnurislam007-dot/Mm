@@ -117,9 +117,7 @@ class HabitCard extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Padding(
+            child: Padding(
                 padding: const EdgeInsets.all(18),
                 child: Column(
                   children: [
@@ -260,7 +258,6 @@ class HabitCard extends StatelessWidget {
             ),
           ),
         ),
-      ),
     )
         .animate(target: isCompleted ? 1 : 0)
         .scale(begin: const Offset(1, 1), end: const Offset(0.98, 0.98), duration: 150.ms)
